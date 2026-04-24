@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import {
   LayoutDashboard, Users, IndianRupee, BookOpen,
   FileCheck, BarChart3, Settings, ChevronRight,
@@ -8,17 +8,18 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/components/AuthProvider'
 import { supabase } from '@/lib/supabase'
-import Dashboard from '@/components/modules/Dashboard'
-import Students from '@/components/modules/Students'
-import Fees from '@/components/modules/Fees'
-import Academics from '@/components/modules/Academics'
-import Documents from '@/components/modules/Documents'
-import Finance from '@/components/modules/Finance'
-import Staff from '@/components/modules/Staff'
-import Admissions from '@/components/modules/Admissions'
-import Transport from '@/components/modules/Transport'
-import Library from '@/components/modules/Library'
-import Health from '@/components/modules/Health'
+
+const Dashboard = lazy(() => import('@/components/modules/Dashboard'))
+const Students = lazy(() => import('@/components/modules/Students'))
+const Fees = lazy(() => import('@/components/modules/Fees'))
+const Academics = lazy(() => import('@/components/modules/Academics'))
+const Documents = lazy(() => import('@/components/modules/Documents'))
+const Finance = lazy(() => import('@/components/modules/Finance'))
+const Staff = lazy(() => import('@/components/modules/Staff'))
+const Admissions = lazy(() => import('@/components/modules/Admissions'))
+const Transport = lazy(() => import('@/components/modules/Transport'))
+const Library = lazy(() => import('@/components/modules/Library'))
+const Health = lazy(() => import('@/components/modules/Health'))
 
 type Module = 'dashboard' | 'students' | 'fees' | 'academics' | 'documents' | 'finance' | 'staff' | 'admissions' | 'transport' | 'library' | 'health'
 
@@ -159,7 +160,9 @@ export default function HomePage() {
 
         {/* Content */}
         <div style={{ padding: '28px 32px' }} className="animate-in">
-          {renderModule()}
+          <Suspense fallback={<div>Loading module...</div>}>
+            {renderModule()}
+          </Suspense>
         </div>
       </main>
     </div>
