@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap');
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════
+   LEKH VISUAL LANGUAGE — SchoolOS
+   लेख — to write. To record. To inscribe.
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* Palette */
+  --bone:         #F2EDE4;   /* Background / Paper — 60-70% dominance */
+  --ink:          #0E0E0C;   /* Text / Borders / Mass */
+  --summit:       #C4501C;   /* Accent / CTA / Heat — fires ONCE per composition */
+  --slate:        #1E2A30;   /* Dark Surface / Night */
+  --glacier:      #7A99A5;   /* Cool Data / Labels */
+  --stone:        #8C8070;   /* Muted text / Metadata */
+  --ash:          #C8BFB0;   /* Borders / Inactive */
+  --want:         #2A6644;   /* Goal / Aspiration */
+  --want-pale:    #DCEEE4;   /* Tag BG — Aspiration */
+  --summit-pale:  #F0E4DC;   /* Tag BG — Achievement */
+  --attempted:    #185FA5;   /* State — In Progress */
+
+  /* Border tiers */
+  --border:        rgba(14,14,12,0.12);   /* Internal division */
+  --border-heavy:  rgba(14,14,12,0.30);   /* Structural breaks */
+
+  /* Typography */
+  --font-display:  'Bebas Neue', 'Impact', sans-serif;
+  --font-body:     'IBM Plex Mono', 'Courier New', monospace;
+  --font-editorial:'Playfair Display', Georgia, serif;
+}
+
+/* ── Reset ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  cursor: crosshair; /* editorial — the surveyor's crosshair */
+}
+
+/* Inputs/buttons restore pointer */
+input, select, textarea, button, a { cursor: default; }
+button { cursor: pointer; }
+
+/* Paper grain overlay — SVG fractalNoise, permanent tooth to every surface */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bone); }
+::-webkit-scrollbar-thumb { background: var(--ash); }
+
+/* ── Layout ── */
+.app-shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+/* ── Section header (01 — TITLE / subtitle) ── */
+.section-header {
+  margin-bottom: 32px;
+}
+.section-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--summit);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.section-subtitle {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--stone);
+  margin-top: 5px;
+  letter-spacing: 0.02em;
+}
+
+/* ── Card — hard-edged, no border-radius ── */
+.card {
+  background: var(--bone);
+  border: 1px solid var(--border-heavy);
+  padding: 20px;
+  position: relative;
+}
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 6px, transparent 6px, transparent 10px);
+  opacity: 0.5;
+}
+
+/* ── Ruled lines substrate ── */
+.ruled {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    var(--border) 27px,
+    var(--border) 28px
+  );
+}
+
+/* ── Stat card — data badge style ── */
+.stat-card {
+  background: var(--bone);
+  border: 1px solid var(--border-heavy);
+  border-left: 3px solid var(--ink);
+  padding: 18px 20px;
+  position: relative;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 42px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-value.accent { color: var(--summit); }
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 9px;
+  color: var(--stone);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 5px;
+}
+.stat-unit {
+  font-family: var(--font-body);
+  font-size: 9px;
+  color: var(--glacier);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+/* ── Status pills (semantic colour) ── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+/* Semantic — green = aspiration/active */
+.pill-want    { background: var(--want-pale); color: var(--want); border-color: var(--want); }
+/* Semantic — orange = achieved/cleared */
+.pill-summit  { background: var(--summit-pale); color: var(--summit); border-color: var(--summit); }
+/* Semantic — blue = attempted/in-progress */
+.pill-attempted { background: rgba(24,95,165,0.08); color: var(--attempted); border-color: var(--attempted); }
+/* Neutral */
+.pill-ash     { background: transparent; color: var(--stone); border-color: var(--ash); }
+/* Alert */
+.pill-alert   { background: var(--summit-pale); color: var(--summit); border-color: var(--summit); }
+
+/* ── Input / Select / Textarea ── */
+.field {
+  background: white;
+  border: 1px solid var(--border-heavy);
+  padding: 7px 10px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.12s;
+  letter-spacing: 0.02em;
+  border-radius: 0; /* HARD STOP — no rounded corners on info components */
+}
+.field:focus { border-color: var(--summit); }
+.field::placeholder { color: var(--ash); }
+select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238C8070'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s;
+  border-radius: 0;
+}
+.btn-primary {
+  background: var(--summit);
+  color: white;
+  border: 1px solid var(--summit);
+}
+.btn-primary:hover { background: #a8411a; border-color: #a8411a; }
+.btn-ink {
+  background: var(--ink);
+  color: var(--bone);
+  border: 1px solid var(--ink);
+}
+.btn-ink:hover { background: var(--slate); border-color: var(--slate); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border-heavy);
+}
+.btn-ghost:hover { background: var(--bone); border-color: var(--ink); }
+.btn-sm { padding: 4px 10px; font-size: 9px; }
+
+/* ── Table ── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  padding: 8px 14px;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+  border-bottom: 1px solid var(--border-heavy);
+  background: transparent;
+}
+.tbl td {
+  padding: 11px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-body);
+}
+.tbl tr:hover td { background: rgba(14,14,12,0.02); }
+.tbl tr:last-child td { border-bottom: none; }
+
+/* ── Sidebar nav ── */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: var(--stone);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--ink); background: rgba(14,14,12,0.04); }
+.nav-item.active { color: var(--ink); border-left-color: var(--summit); background: rgba(196,80,28,0.05); }
+
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(14,14,12,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  background: var(--bone);
+  border: 1px solid var(--border-heavy);
+  border-top: 3px solid var(--ink);
+  padding: 28px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 0;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  color: var(--ink);
+}
+
+/* ── Coordinate / credibility stamp ── */
+.coord {
+  font-family: var(--font-body);
+  font-size: 9px;
+  color: var(--glacier);
+  letter-spacing: 0.08em;
+}
+
+/* ── Margin line ── */
+.margin-line {
+  position: absolute;
+  left: 15%;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(196,80,28,0.25);
+  pointer-events: none;
+}
+
+/* ── Marquee band ── */
+.marquee-band {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 6px 0;
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ── Animation ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeIn 0.18s ease; }
+
+/* ── Recharts overrides ── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line { stroke: var(--border) !important; }
+.recharts-text { fill: var(--stone) !important; font-size: 10px !important; font-family: 'IBM Plex Mono' !important; }
+
+/* ── Label / form ── */
+.field-label {
+  font-family: var(--font-body);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: block;
+  margin-bottom: 5px;
+}

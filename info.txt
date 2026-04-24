@@ -1,0 +1,181 @@
+SchoolOS Database Structure Overview
+=====================================
+
+This document explains the database schema and relationships for the SchoolOS school management system.
+
+CORE ENTITIES
+-------------
+
+1. STUDENTS
+   - Primary entity for student information
+   - Contains personal details, academic info, and guardian contacts
+   - Referenced by: fee_payments, fee_dues, academic_records, attendance, documents, library_issues, health_records, student_profiles
+
+2. STAFF
+   - Staff member information (teachers, admin, support staff)
+   - Independent entity for HR management
+
+3. AUTHENTICATION (profiles)
+   - User accounts for system access
+   - Links to Supabase auth.users table
+   - Roles: admin, teacher, staff
+   - Row Level Security (RLS) enabled for data protection
+
+ACADEMIC MANAGEMENT
+-------------------
+
+4. SUBJECTS
+   - Curriculum subjects by grade
+   - Pre-seeded with standard subjects (Math, English, Hindi, Science, Social Studies, Sanskrit)
+
+5. ACADEMIC_RECORDS
+   - Student marks and grades per exam
+   - Links students to subjects with performance data
+   - Exam types: unit_test_1, unit_test_2, mid_term, pre_board, final, quarterly
+
+6. ATTENDANCE
+   - Daily attendance tracking
+   - One record per student per date
+
+FINANCIAL MANAGEMENT
+--------------------
+
+7. FEE_STRUCTURE
+   - Annual fee structure by grade
+   - Components: tuition, admission, exam, sports, transport, misc fees
+   - Total calculated automatically
+
+8. FEE_PAYMENTS
+   - Individual payment transactions
+   - Types: tuition, admission, exam, sports, transport, misc, full
+   - Payment modes: cash, online, cheque, upi, bank_transfer
+
+9. FEE_DUES
+   - Running balance per student per year
+   - Outstanding amount calculated automatically
+
+DOCUMENT MANAGEMENT
+-------------------
+
+10. DOCUMENTS
+    - Student document tracking
+    - Types: birth_certificate, aadhar_card, previous_marksheet, transfer_certificate, medical_certificate, caste_certificate, income_certificate, passport_photo, address_proof, guardian_id, other
+    - Status tracking: pending, submitted, verified, rejected, expired
+
+ADMISSIONS & ENROLLMENT
+-----------------------
+
+11. ADMISSIONS
+    - Admission pipeline management
+    - Prospect tracking from inquiry to enrollment
+    - Status: new, contacted, shortlisted, enrolled, declined
+
+TRANSPORT MANAGEMENT
+--------------------
+
+12. TRANSPORT_ROUTES
+    - School bus routes and vehicles
+    - Capacity and driver information
+    - Status: active, inactive, maintenance
+
+LIBRARY MANAGEMENT
+------------------
+
+13. LIBRARY_BOOKS
+    - Book inventory with copies tracking
+
+14. LIBRARY_ISSUES
+    - Book lending records
+    - Links students to books with issue/return dates
+
+HEALTH & WELLNESS
+-----------------
+
+15. HEALTH_RECORDS
+    - Student health tracking
+    - Medical conditions, notes, follow-ups
+
+STUDENT PERSONALIZATION
+-----------------------
+
+16. STUDENT_PROFILES
+    - Learning styles, strengths, interests
+    - Mentoring and personalized notes
+
+ANNOUNCEMENTS
+-------------
+
+17. ANNOUNCEMENTS
+    - School notices and communications
+    - Target specific grades or all students
+    - Categories: general, exam, fee, event, holiday
+
+RELATIONSHIPS & CONSTRAINTS
+---------------------------
+
+- All student-related tables cascade delete on student removal
+- Foreign key constraints ensure data integrity
+- UUID primary keys for scalability
+- Timestamps for audit trails
+- Check constraints on enums/status fields
+
+INDEXES
+-------
+
+- Optimized indexes on frequently queried fields:
+  - Students: grade, status
+  - Fee payments: student_id, academic_year
+  - Academic records: student_id, academic_year
+  - Documents: student_id
+  - Attendance: student_id + date
+
+SECURITY
+--------
+
+- Row Level Security (RLS) on profiles table
+- Users can only access their own profile data
+- Admins have broader access permissions
+- Authentication required for all data access
+
+DATA FLOW
+---------
+
+1. Student enrollment creates records in students table
+2. Fee structure defines annual costs by grade
+3. Payments update fee_dues balances
+4. Academic performance tracked via academic_records
+5. Documents collected and verified over time
+6. Health and library activities logged
+7. Staff manage all operations through authenticated profiles
+
+This structure supports comprehensive school management from admissions to graduation, with full financial tracking, academic monitoring, and operational oversight.
+
+USER AUTHENTICATION SETUP
+-------------------------
+
+The system includes authentication for staff/admin users:
+
+1. DATABASE: profiles table linked to Supabase auth.users
+2. SECURITY: Row Level Security (RLS) policies protect user data
+3. ROLES: admin (full access), teacher, staff (limited access)
+
+MANUAL USER CREATION METHODS
+---------------------------
+
+Method 1: Node.js Script (Recommended)
+- Install: npm install @supabase/supabase-js
+- Set environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
+- Run: node create_users.js
+- Creates users with encrypted passwords automatically
+
+Method 2: Supabase Dashboard
+- Go to your Supabase project dashboard
+- Navigate to Authentication > Users
+- Click "Add user" and enter email/password
+- Manually add corresponding record to profiles table via SQL Editor
+- Note: Passwords are hashed automatically in dashboard
+
+Method 3: Direct SQL (Advanced)
+- Use Supabase SQL Editor with service role permissions
+- Insert into auth.users with proper password hashing
+- Requires crypto functions and careful handling
