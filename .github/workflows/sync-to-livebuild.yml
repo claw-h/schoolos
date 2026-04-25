@@ -17,9 +17,17 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git config --global credential.helper store
-          echo "https://claw-h:${{ secrets.SYNC_TOKEN }}@github.com" > ~/.git-credentials
+
+      - name: Debug - Check token
+        run: |
+          echo "Secret length: ${#SYNC_TOKEN}"
+          echo "Token prefix: ${SYNC_TOKEN:0:4}"
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
 
       - name: Push to private repo
         run: |
-          git push https://github.com/claw-h/schoolos-livebuild.git main --force
+          git remote add livebuild "https://claw-h:${SYNC_TOKEN}@github.com/claw-h/schoolos-livebuild.git"
+          git push livebuild main --force
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
