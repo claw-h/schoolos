@@ -13,20 +13,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
       - name: Configure git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Debug - Check secret
-        run: |
-          echo "Secret length: ${#SYNC_TOKEN}"
-          echo "URL would be: https://claw-h:***@github.com/claw-h/schoolos-livebuild.git"
-        env:
-          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
-
       - name: Push to private repo
         run: |
-          git push "https://claw-h:${SYNC_TOKEN}@github.com/claw-h/schoolos-livebuild.git" main --force
-        env:
-          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          git push git@github.com:claw-h/schoolos-livebuild.git main --force
