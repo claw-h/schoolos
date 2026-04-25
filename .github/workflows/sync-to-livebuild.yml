@@ -8,24 +8,18 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    env:
-      SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-
-      - name: Debug - Check token
-        run: |
-          echo "Length: ${#SYNC_TOKEN}"
-          echo "Prefix: $(echo $SYNC_TOKEN | cut -c1-4)"
-
       - name: Push to private repo
-        run: |
-          git remote add livebuild "https://claw-h:$SYNC_TOKEN@github.com/claw-h/schoolos-livebuild.git"
-          git push livebuild main --force
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.SYNC_TOKEN }}
+        with:
+          source-directory: '.'
+          destination-github-username: 'claw-h'
+          destination-repository-name: 'schoolos-livebuild'
+          user-email: actions@github.com
+          target-branch: main
