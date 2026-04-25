@@ -13,7 +13,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
       - name: Push to private repo
         run: |
           git remote add livebuild "https://claw-h:${{ secrets.SYNC_TOKEN }}@github.com/claw-h/schoolos-livebuild.git"
           git push livebuild main --force
+        env:
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
