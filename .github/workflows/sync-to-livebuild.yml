@@ -15,11 +15,10 @@ jobs:
 
       - name: Push to private repo
         uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.SYNC_TOKEN }}
         with:
           source-directory: '.'
           destination-github-username: 'claw-h'
           destination-repository-name: 'schoolos-livebuild'
           user-email: actions@github.com
           user-name: GitHub Actions
+          API_TOKEN_GITHUB: ${{ secrets.SYNC_TOKEN }}
