@@ -14,12 +14,8 @@ jobs:
           fetch-depth: 0
 
       - name: Push to private repo
-        uses: cpina/github-action-push-to-another-repository@main
+        run: |
+          git remote add target https://x-access-token:${SYNC_TOKEN}@github.com/claw-h/schoolos-livebuild.git
+          git push target main --force
         env:
-          API_TOKEN_GITHUB: ${{ secrets.SYNC_TOKEN }}
-        with:
-          source-directory: '.'
-          destination-github-username: 'claw-h'
-          destination-repository-name: 'schoolos-livebuild'
-          user-email: actions@github.com
-          target-branch: main
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
