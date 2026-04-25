@@ -4,26 +4,67 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-to-livebuild
+  cancel-in-progress: true
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Debug secrets
-        run: |
-          echo "Length: ${#SYNC_TOKEN}"
-          echo "Is empty: $([[ -z "$SYNC_TOKEN" ]] && echo YES || echo NO)"
-          env | grep -i sync || echo "SYNC_TOKEN not in env at all"
+      - name: Validate sync token
         env:
           SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
-
-      - name: Push to private repo
         run: |
-          git remote add target https://x-access-token:${SYNC_TOKEN}@github.com/claw-h/schoolos-livebuild.git
-          git push target main --force
-        env:
-          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          if [ -z "$SYNC_TOKEN" ]; then
+            echo "::error::Missing secret SYNC_TOKEN. Add a PAT or fine-grained token with access to claw-h/schoolos-livebuild."
+            exit 1
+          fi
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: claw-h/schoolos-livebuild
+          ref: main
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: livebuild
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sync files into target repository
+        run: |
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude 'livebuild/' \
+            ./ livebuild/
+
+          # Avoid copying this workflow into the target repo and triggering recursive sync runs.
+          rm -f livebuild/.github/workflows/sync-to-livebuild.yml
+
+      - name: Commit and push changes
+        working-directory: livebuild
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to sync."
+            exit 0
+          fi
+
+          git commit -m "Sync from claw-h/schoolos@${GITHUB_SHA}"
+          git push origin HEAD:main
