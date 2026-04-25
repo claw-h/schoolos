@@ -14,9 +14,6 @@ jobs:
           fetch-depth: 0
 
       - name: Push to private repo
-        env:
-          PRIVATE_REPO_URL: ${{ secrets.LIVEBUILD_REPO_URL }}
-          GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          git remote add livebuild "$PRIVATE_REPO_URL"
+          git remote add livebuild "https://claw-h:${{ secrets.SYNC_TOKEN }}@github.com/claw-h/schoolos-livebuild.git"
           git push livebuild main --force
