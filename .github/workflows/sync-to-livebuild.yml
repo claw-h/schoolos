@@ -13,12 +13,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git config --global credential.helper store
+          echo "https://claw-h:${{ secrets.SYNC_TOKEN }}@github.com" > ~/.git-credentials
+
       - name: Push to private repo
-        uses: cpina/github-action-push-to-another-repository@main
-        with:
-          source-directory: '.'
-          destination-github-username: 'claw-h'
-          destination-repository-name: 'schoolos-livebuild'
-          user-email: actions@github.com
-          user-name: GitHub Actions
-          API_TOKEN_GITHUB: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          git push https://github.com/claw-h/schoolos-livebuild.git main --force
