@@ -9,6 +9,8 @@ import {
 import { useAuth } from '@/components/AuthProvider'
 import { supabase } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 const Dashboard = lazy(() => import('@/components/modules/Dashboard'))
 const Students = lazy(() => import('@/components/modules/Students'))
 const Fees = lazy(() => import('@/components/modules/Fees'))
