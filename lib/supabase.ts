@@ -3,6 +3,13 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
+// Log presence of env vars (do NOT log actual keys)
+if (typeof window === 'undefined') {
+  // Server/build-time log
+  // eslint-disable-next-line no-console
+  console.log('SUPABASE_ENV: url_set=' + Boolean(supabaseUrl) + ', key_set=' + Boolean(supabaseKey) + ', NODE_ENV=' + process.env.NODE_ENV)
+}
+
 // Initialize with dummy values if env vars are missing - this prevents init errors
 // The actual initialization happens lazily when used
 export const supabase = createClient(
