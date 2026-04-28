@@ -3,12 +3,22 @@ import { AppShell } from '@/components/erp/app-shell'
 import { signOutAction } from '@/app/auth-actions'
 import { requireAuthUserContext } from '@/lib/services/auth-context'
 import { createSupabaseServiceClient } from '@/lib/supabase-service'
+import { isAcademicYearStarting, isAcademicYearEnding, getCurrentAcademicYear } from '@/lib/academic-year'
 
 export default async function ProtectedAppLayout({ children }: { children: React.ReactNode }) {
   const auth = await requireAuthUserContext().catch(() => null)
 
   if (!auth) {
     redirect('/login')
+  }
+
+  // Academic year auto-check on boot
+  const currentYear = getCurrentAcademicYear()
+  if (isAcademicYearStarting()) {
+    console.warn(`⚠️ ALERT: Academic year transition period detected (${currentYear}). Please verify fee structures and settings.`)
+  }
+  if (isAcademicYearEnding()) {
+    console.warn(`ℹ️ Academic year ${currentYear} is ending soon (March 25-31). Prepare for year-end activities.`)
   }
 
   let schoolName = 'CJHS'

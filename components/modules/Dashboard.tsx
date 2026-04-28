@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react'
 import { Users, IndianRupee, TrendingUp, AlertTriangle, BookOpen, FileCheck, ArrowUpRight, BookOpenCheck } from 'lucide-react'
 import { supabase, formatINR, CURRENT_YEAR } from '@/lib/supabase'
+import { Clock } from '@/components/ui/Clock'
+import { WeatherWidget } from '@/components/ui/WeatherWidget'
+import { getCurrentAcademicYear, isAcademicYearStarting } from '@/lib/academic-year'
 
 type Props = { onNavigate: (m: any) => void }
 
@@ -48,13 +51,21 @@ export default function Dashboard({ onNavigate }: Props) {
 
   return (
     <div>
-      {/* Section header */}
-      <div className="section-header">
-        <div className="section-eyebrow">00 — Overview</div>
-        <div className="section-title">School at a Glance</div>
-        <div className="section-subtitle">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}
-          &nbsp;·&nbsp;ACADEMIC YEAR 2024–25
+      {/* Section header with clock + weather */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 20 }}>
+          <div className="section-eyebrow">00 — Overview</div>
+          <div className="section-title">School at a Glance</div>
+          <div className="section-subtitle">
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}
+            &nbsp;·&nbsp;ACADEMIC YEAR {getCurrentAcademicYear().toUpperCase().replace('-', '–')}
+            {isAcademicYearStarting() && <span style={{ color: 'var(--summit)', marginLeft: 12 }}>⚠️ New Academic Year Starting</span>}
+          </div>
+        </div>
+        {/* Clock + Weather Grid — equal width */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <Clock />
+          <WeatherWidget />
         </div>
       </div>
 
